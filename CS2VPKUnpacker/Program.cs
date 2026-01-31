@@ -32,8 +32,9 @@ public class Program
 
         CheckVPKFiles(vpkPath);
 
-        Console.Write("\n\nНажми любую клавишу для выхода...");
-        Console.ReadKey();
+        Console.WriteLine("\nНажмите любую клавишу для выхода...");
+        Console.ReadKey(true);
+        Environment.Exit(0);
 
         ignorePanorama = GetYesNoInput("Игнорировать файлы panorama?");
 
@@ -58,8 +59,9 @@ public class Program
             CheckVPKFiles(file + "/pak01_dir.vpk");
         }
 
-        Console.Write("\n\nНажми любую клавишу для продолжения...");
-        Console.ReadKey();
+        Console.WriteLine("\nНажмите любую клавишу для выхода...");
+        Console.ReadKey(true);
+        Environment.Exit(0);
     }
     public static void CheckVPKFiles(string vpkFile)
     {
@@ -190,17 +192,26 @@ public class Program
     }
     static bool GetYesNoInput(string text)
     {
-        Console.WriteLine($"{text} (Y/N)");
-        Console.Write("> ");
-
-        string keyChar = Console.ReadKey().KeyChar.ToString().ToLower();
-        Console.Write("\n");
-        return keyChar switch
+        ConsoleKey key;
+        while (true)
         {
-            "y" => true,
-            "n" => false,
-            _ => GetYesNoInput(text),
-        };
+            Console.WriteLine($"{text} (Y/N)");
+            Console.Write("> ");
+
+            key = Console.ReadKey(true).Key;
+
+            if (key == ConsoleKey.Y)
+            {
+                Console.WriteLine("Y");
+                return true;
+            }
+            else if (key == ConsoleKey.N)
+            {
+                Console.WriteLine("N");
+                return false;
+            }
+
+        }
     }
 
 }
