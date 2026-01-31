@@ -1,16 +1,51 @@
-﻿using SteamDatabase.ValvePak;
+using SteamDatabase.ValvePak;
 using System.Diagnostics;
 using static System.Net.Mime.MediaTypeNames;
 
 public class Program
 {
     static bool ignorePanorama = false;
+    static bool ignoreCharacters = false;
     static bool debug = false;
     public static void Main(string[] args)
     {
+
+        Console.WriteLine("Введите путь к папке с pak01_dir.vpk");
+        Console.Write("> ");
+
+        string? basePath = Console.ReadLine()?.Trim('"');
+
+        if (string.IsNullOrWhiteSpace(basePath) || !Directory.Exists(basePath))
+        {
+            Console.WriteLine("Указан неверный путь.");
+            Console.ReadKey();
+            return;
+        }
+
+        string vpkPath = Path.Combine(basePath, "pak01_dir.vpk");
+
+        ignorePanorama = GetYesNoInput("Игнорировать файлы panorama?");
+        ignoreCharacters = GetYesNoInput("Игнорировать файлы characters?");
+
+        if (args.Contains("-debug"))
+            debug = true;
+
+        CheckVPKFiles(vpkPath);
+
+        Console.Write("\n\nНажми любую клавишу для выхода...");
+        Console.ReadKey();
+
         ignorePanorama = GetYesNoInput("Игнорировать файлы panorama?");
 
         if (args.Length == 0 )
+        {
+            CheckVPKFiles("csgo/pak01_dir.vpk");
+            return;
+        }
+
+        ignoreCharacters = GetYesNoInput("Игнорировать файлы characters?");
+
+        if (args.Length == 0)
         {
             CheckVPKFiles("csgo/pak01_dir.vpk");
             return;
@@ -71,6 +106,9 @@ public class Program
                 string? directory = Path.GetDirectoryName(file);
 
                 if (file.Contains("panorama") && ignorePanorama)
+                    continue;
+
+                if (file.Contains("characters") && ignoreCharacters)
                     continue;
 
                 if (!File.Exists(file))
